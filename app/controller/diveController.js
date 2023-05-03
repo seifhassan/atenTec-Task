@@ -7,11 +7,13 @@ const db = client.db("defaultDB");
 class dive {
   static createNewDive = async (req, res) => {
     if (req.body.DiveDepth >= 40) return res.status(400).send("maxmum Depth 40 m");
+    if (req.body.DiveDepth <= 0) return res.status(400).send("depth can not be 0 or less than 0");
     const diver = await db.collection('diver').find(
       {_id:new ObjectId(req.params.diverId)},
        {name:req.body.DiverName}
     ).toArray();
-    if (req.body.DiveDepth >= diver[0].greatestDepth) return res.status(400).send(`maxmum Depth less than ${diver[0].greatestDepth}`);
+
+    if (diver[0].greatestDepth!==0 && req.body.DiveDepth >= diver[0].greatestDepth) return res.status(400).send(`maxmum Depth less than ${diver[0].greatestDepth}`);
     if (!diver) return res.status(404).send("wrong Id or name");
     const dt =await this.checkDiveProcessAndGetDt(diver,req.params.diverId,req.body.DiveDepth,req.body.DiveDate);
     if(dt.status=="FAILED") return res.status(404).send(dt.error);
@@ -61,6 +63,7 @@ class dive {
       };
     }
     const lastDiveandnumberOfDive = await this.getLastDiverDiveAndCount(diverId);
+    if(!lastDiveandnumberOfDive) return 0;
     const TimeToDive=await this.getMinTimeToDive(lastDiveandnumberOfDive.lastDive,lastDiveandnumberOfDive.diveCount,depth); 
     const requiredDiveTime= Date.parse(DiveDate);    
     if(requiredDiveTime < TimeToDive.nearestTimeToDive) {
@@ -77,19 +80,22 @@ class dive {
     }
     static getLastDiverDiveAndCount = async (diverId) => { 
       const diveCount = await db.collection('dive').find({DiverId:diverId}).count();
-     const lastDive=await db.collection("dive").find({DiverId:diverId}).skip(diveCount - 1).toArray();
-     return {
+      if(diveCount==0) return 0;
+      const lastDive=await db.collection("dive").find({DiverId:diverId}).skip(diveCount - 1).toArray();
+      return {
       lastDive: lastDive[0],
       diveCount: diveCount
     };
-    }
+
+ 
+  }
+    
   static getMinTimeToDive = async (lastDive,diveCount,depth) => {
    const MinTimeToDive= (lastDive.dt)+(depth*(2^diveCount));
    const nearestTimeToDive= MinTimeToDive + Date.parse(lastDive.DiveDate)
    return {
    nearestTimeToDive : nearestTimeToDive ,
    MinTimeToDive : MinTimeToDive,
-
   }
   }
 }

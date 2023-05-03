@@ -1,5 +1,1 @@
-1-Every new dive depth must be less than last dive depth.
-is you mean for the same diver last dive depth ?? so max depth will be the first diver dive.
-2-Validate that no two dives with same inputs inserted into array (same diver, same time, same dive number, same depth). i cant understand this.
-3-Required unit tests. sorry but have not enough time.
-4-Document your API using OpenAPI 3.0 specifications. i didnt 
+3-Required unit tests and Document your API using OpenAPI 3.0 specifications . sorry but have not enough time.
