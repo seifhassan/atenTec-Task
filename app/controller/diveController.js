@@ -8,11 +8,11 @@ class dive {
   static createNewDive = async (req, res) => {
     if (req.body.DiveDepth >= 40) return res.status(400).send("maxmum Depth 40 m");
     if (req.body.DiveDepth <= 0) return res.status(400).send("depth can not be 0 or less than 0");
+  
     const diver = await db.collection('diver').find(
       {_id:new ObjectId(req.params.diverId)},
        {name:req.body.DiverName}
     ).toArray();
-
     if (diver[0].greatestDepth!==0 && req.body.DiveDepth >= diver[0].greatestDepth) return res.status(400).send(`maxmum Depth less than ${diver[0].greatestDepth}`);
     if (!diver) return res.status(404).send("wrong Id or name");
     const dt =await this.checkDiveProcessAndGetDt(diver,req.params.diverId,req.body.DiveDepth,req.body.DiveDate);
@@ -21,7 +21,7 @@ class dive {
     try {
       const createDive = await db.collection("dive").insertOne(dataJson);
       await this.addDiveToDiverLog(diver[0],dataJson,createDive.insertedId);
-      res.status(200).send(createDive);
+      res.status(200).send("created Successfully");
     } catch (e) {
       res.status(500).send({
         data: e,

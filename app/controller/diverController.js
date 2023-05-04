@@ -25,8 +25,12 @@ const db = client.db('defaultDB');
 
 class diver {
   static addDiverToDB = async (req, res) => {
+    const diver =await db.collection("diver").find({diverNumber:req.body.diverNumber}).toArray();
+    console.log(diver[0]);
+    if (diver[0]) return res.status(400).send("diver number must be unique")  
     const dataJson = {
       name:req.body.name,
+      diverNumber:req.body.diverNumber,
       DiveLogs:[],
       numberOfdives:0,
       greatestDepth:0,
@@ -38,8 +42,8 @@ class diver {
   // }; 
     try { 
       //const db = await getDbInstance(config);
-      const createDiver = await db.collection('diver').insertOne(dataJson);
-      res.status(200).send(createDiver);
+      await db.collection('diver').insertOne(dataJson);
+      res.status(200).send("diver added Successfully");
     } catch (e) {
       res.status(500).send({
         data: e,
@@ -47,6 +51,17 @@ class diver {
       });
     }
   
- }
+  }
+
+ static getDiverFromDB = async (req, res) => {
+
+  const diver =await db.collection("diver").find({diverNumber:req.params.diverNumber}).toArray();
+  console.log(diver[0]);
+  if (!diver[0]) return res.status(404).send("diver not found") 
+  return res.status(200).send(diver[0]);
+
+ 
+
 }
+ }
 module.exports = diver;
