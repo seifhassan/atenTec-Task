@@ -4,11 +4,11 @@ const { celebrate, Joi, Segments } =require("celebrate");
 
  router.post('/createNewDive/:diverId',
  celebrate({
-  [Segments.PARAMS]: Joi.object({
-    diverId: Joi.string()
-      .required()
-      .label("diverId"),
-  }),
+  // [Segments.PARAMS]: Joi.object({
+  //   diverId: Joi.string()
+  //     .required()
+  //     .label("diverId"),
+  // }),
     [Segments.BODY]: Joi.object({
       DiverName: Joi.string().required().label("DiverName"),
       DiveDepth: Joi.number().required().label("DiveDepth"),

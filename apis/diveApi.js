@@ -22,7 +22,7 @@ const diveSchema = {
 
 const diveApiArr = [
   {
-    path: "/dive/createNewDive/:diverId",
+    path: "/dive/createNewDive/645413a073c588c7ccb997f7",
     respondWith: {
       post: {
         description: "create new Dive",
@@ -31,7 +31,7 @@ const diveApiArr = [
             name: "diverId",
             in: "params",
             type: "string",
-            required: true,
+           // required: true,
           },
         ],      
         requestBody: {

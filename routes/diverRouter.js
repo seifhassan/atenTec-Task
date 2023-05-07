@@ -9,13 +9,7 @@ router.post('/addDiver', celebrate({
     }),
   }), diver.addDiverToDB)
 
-  router.get('/getDiver/:diverNumber', celebrate({
-    [Segments.PARAMS]: Joi.object({
-      diverNumber: Joi.number()
-        .required()
-        .label("diverNumber"),
-    }),
-  }), diver.getDiverFromDB)
+  router.get('/getDiver/:diverNumber',  diver.getDiverFromDB)
 
 
 module.exports = router 

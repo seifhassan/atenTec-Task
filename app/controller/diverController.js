@@ -2,32 +2,22 @@
 require('dotenv').config()
 //var db = require('../../connection');
 const MongoClient = require('mongodb').MongoClient;
-const client = new MongoClient(process.env.DATABASE_URL)
-const db = client.db('defaultDB');
+//const client = new MongoClient(process.env.DATABASE_URL)
+//const db = client.db('defaultDB');
 
 
-// const getDbInstance = (config) => new Promise((resolve,reject) => {
-//     const client = new MongoClient(config.dbUrl, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true
-//     });
-//     console.log(config);
-//     client.connect((error) => {
-//         if(error){
-//             console.error(error);
-//             reject(error);
-//         }
-//         let db = client.db(config.dbName);
-
-//         resolve(db);
-//     })
-// })
+const getDbInstance = (config) => new Promise((resolve,reject) => {
+    const client = new MongoClient(config.dbUrl);
+    
+        let db = client.db(config.dbName);        
+        resolve(db);
+        if(!db) reject(new Error);
+    
+})
 
 class diver {
   static addDiverToDB = async (req, res) => {
-    const diver =await db.collection("diver").find({diverNumber:req.body.diverNumber}).toArray();
-    console.log(diver[0]);
-    if (diver[0]) return res.status(400).send("diver number must be unique")  
+
     const dataJson = {
       name:req.body.name,
       diverNumber:req.body.diverNumber,
@@ -36,29 +26,46 @@ class diver {
       greatestDepth:0,
     }
    
-  //   const config = {
-  //     dbUrl: 'mongodb+srv://seiffhassann:NzJLPfB0ent9uVyU@divetask.ltsom0s.mongodb.net/test',
-  //     dbName: "task"
-  // }; 
-    try { 
-      //const db = await getDbInstance(config);
-      await db.collection('diver').insertOne(dataJson);
-      res.status(200).send("diver added Successfully");
-    } catch (e) {
-      res.status(500).send({
-        data: e,
-        message: e.message,
-      });
-    }
+  
+
+       await getDbInstance(config).then((db)=>{
+         db.collection('diver').insertOne(dataJson);
+         res.status(200).send("diver added Successfully");
+       }).catch((error)=>{
+        res.status(500).send({
+          data: error,
+          message: e.message,
+        });
+       });
+      
+      
+  
   
   }
 
  static getDiverFromDB = async (req, res) => {
-
-  const diver =await db.collection("diver").find({diverNumber:req.params.diverNumber}).toArray();
-  console.log(diver[0]);
-  if (!diver[0]) return res.status(404).send("diver not found") 
-  return res.status(200).send(diver[0]);
+  const config = {
+    dbUrl: process.env.DATABASE_URL,
+    dbName: "defaultDB"
+};
+  console.log(req.params.diverNumber);
+  await getDbInstance(config).then((db)=>{
+     db.collection("diver").find({diverNumber:req.params.diverNumber}).toArray().then((diver)=>{    
+      return res.status(200).send(diver);
+     }).catch((error)=>{
+      return res.status(404).send("not found");
+     });
+     
+  }).catch((error)=>{
+    res.status(500).send({
+      data: error,
+      message: e.message,
+    });
+  })
+  
+  
+ 
+  
 
  
 

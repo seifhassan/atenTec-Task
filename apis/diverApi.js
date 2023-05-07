@@ -18,7 +18,7 @@ const diverSchema = {
 
 const diverApiArr = [
   {
-    path: "/diver/getDiver/:diverNumber",
+    path: "/diver/getDiver/{diverNumber}",
     respondWith: {
       get: {
         parameters: [

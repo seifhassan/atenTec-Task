@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  
   "dependencies": {
     "celebrate": "^15.0.1",
     "color": "^4.2.3",
